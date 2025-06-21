@@ -240,7 +240,7 @@ if __name__ == '__main__':
             if last_mail_sent_time is None or (datetime.now() - last_mail_sent_time).seconds > notify_interval:
                 if notify_count < max_notify_count:
                     print(f"{notify_count}\n{text}")
-                    #send_mail("Reservation is available!")
+                    send_mail("Reservation is available!")
                     last_mail_sent_time = datetime.now()
                     notify_count += 1
         else:
