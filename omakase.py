@@ -168,7 +168,7 @@ class webDriver(object):
 
     def send_mail(self, title, text):
         sender_email = self.config["sender_email"]
-        to_mail = self.config["to_mail"]
+        to_mail = self.config["to_email"]
         msg = MIMEText(text)
         msg["Subject"] = title
         msg["From"] = sender_email
