@@ -209,17 +209,16 @@ class webDriver(object):
             return element.text
         return None
 
-    def check_if_available(self):
+    def check_if_available(self, hotel_name):
         url = self.shop_url
-        print(f"Checking availability...{url}")
+        print(f"Checking availability...for {hotel_name}\n{url}")
         self.driver.get(url)
         class_name = 'p-r_reserve_action_reserve'
         element = self.find_element_with_timeout(By.CLASS_NAME, class_name, timeout=3, stop_on_error=True)
-        try:
+        text = element.text if element else None
+        if text is not None and text == "このお店を予約する":
             element.click()
             return True
-        except WebDriverException:
-            print("Element is not clickable")
         return False
 
 
@@ -239,7 +238,7 @@ if __name__ == '__main__':
     title = f"Reservation for {hotel_name} is available!"
     text = f"Reservation for {hotel_name} is available!\n CLick here to book: {wd.shop_url}!"
     while True:
-        if wd.check_if_available():
+        if wd.check_if_available(hotel_name):
             if last_mail_sent_time is None or (datetime.now() - last_mail_sent_time).seconds > notify_interval:
                 if notify_count < max_notify_count:
                     print(f"{notify_count}\n{text}")
