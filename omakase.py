@@ -197,7 +197,7 @@ class webDriver(object):
         password_box = self.find_element_with_timeout(By.XPATH, '//*[@id="user_password"]', timeout=1, stop_on_error=True)
         password_box.send_keys(password)
         xpath = '//*[@id="new_user"]/input[2]'
-        self.find_element_with_timeout(By.XPATH, xpath, timeout=1, stop_on_error=True).click()
+        self.find_element_with_timeout(By.XPATH, xpath, timeout=1, stop_on_error=True).submit()
         time.sleep(2)
 
     def get_hotel_name(self):
