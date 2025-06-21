@@ -248,5 +248,4 @@ if __name__ == '__main__':
         else:
             last_mail_sent_time = None
             notify_count = 0
-        time.sleep(1)
     #wd.close_driver()
