@@ -229,7 +229,8 @@ if __name__ == '__main__':
     wd.login()
     hotel_name = wd.get_hotel_name()
     print(f"Hotel name: {hotel_name}")
-    start_title = f"Start checking availability for {hotel_name} at \n {wd.shop_url}"
+    time_stamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    start_title = f"Start checking availability for {hotel_name} at {time_stamp}"
     start_message = f"Start checking availability for {hotel_name} at \n {wd.shop_url}"
     wd.send_mail(start_title, start_message)
     last_mail_sent_time = None
