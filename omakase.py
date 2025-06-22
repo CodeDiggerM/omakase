@@ -211,7 +211,8 @@ class webDriver(object):
 
     def check_if_available(self, hotel_name):
         url = self.shop_url
-        print(f"Checking availability...for {hotel_name}\n{url}")
+        time_stamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print(f"Checking availability for {hotel_name} at {time_stamp}")
         self.driver.get(url)
         class_name = 'p-r_reserve_action_reserve'
         element = self.find_element_with_timeout(By.CLASS_NAME, class_name, timeout=3, stop_on_error=True)
