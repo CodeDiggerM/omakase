@@ -233,11 +233,13 @@ if __name__ == '__main__':
     wd.send_mail(start_title, start_message)
     last_mail_sent_time = None
     notify_interval = 10
+    check_interval = 5
     max_notify_count = 5
     notify_count = 0
     title = f"Reservation for {hotel_name} is available!"
     text = f"Reservation for {hotel_name} is available!\n CLick here to book: {wd.shop_url}!"
     while True:
+        time.sleep(check_interval)
         if wd.check_if_available(hotel_name):
             if last_mail_sent_time is None or (datetime.now() - last_mail_sent_time).seconds > notify_interval:
                 if notify_count < max_notify_count:
