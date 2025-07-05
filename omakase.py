@@ -21,8 +21,7 @@ class webDriver(object):
     def __init__(self):
         self.driver = None
         self.config = self.__load_browser_config()
-        self.shop_url = self.config.get("shop_url", None)
-
+        self.shop_urls = self.config.get("shop_urls", None)
 
     def __load_browser_config(self):
         if self.config_file is None:
@@ -201,16 +200,16 @@ class webDriver(object):
         time.sleep(2)
 
     def get_hotel_name(self):
-        url = self.shop_url
-        self.driver.get(url)
-        class_name = 'p-r_title'
-        element = self.find_element_with_timeout(By.CLASS_NAME, class_name, timeout=3, stop_on_error=True)
-        if element:
-            return element.text
-        return None
+        hotel_name_map = {}
+        for url in self.shop_urls:
+            self.driver.get(url)
+            class_name = 'p-r_title'
+            element = self.find_element_with_timeout(By.CLASS_NAME, class_name, timeout=3, stop_on_error=True)
+            hotel_name_map[url] = element.text
+            time.sleep(1)
+        return hotel_name_map
 
-    def check_if_available(self, hotel_name):
-        url = self.shop_url
+    def check_if_available(self, hotel_name, url):
         time_stamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         print(f"Checking availability for {hotel_name} at {time_stamp}")
         self.driver.get(url)
@@ -227,29 +226,34 @@ if __name__ == '__main__':
     wd = webDriver()
     wd.new_driver()
     wd.login()
-    hotel_name = wd.get_hotel_name()
-    print(f"Hotel name: {hotel_name}")
+    hotel_name_map = wd.get_hotel_name()
+    print(f"Hotel name: {hotel_name_map}")
     time_stamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    start_title = f"Start checking availability for {hotel_name} at {time_stamp}"
-    start_message = f"Start checking availability for {hotel_name} at \n {wd.shop_url}"
+    start_title = f"Start checking availability at {time_stamp}"
+    start_message = ""
+    for url, hotel_name in hotel_name_map.items():
+        start_message += f"Start checking availability for {hotel_name} at \n {url}\n"
     wd.send_mail(start_title, start_message)
     last_mail_sent_time = None
     notify_interval = 10
     check_interval = 5
     max_notify_count = 5
     notify_count = 0
-    title = f"Reservation for {hotel_name} is available!"
-    text = f"Reservation for {hotel_name} is available!\n CLick here to book: {wd.shop_url}!"
+    title = "Reservation for {hotel_name} is available!"
+    text = "Reservation for {hotel_name} is available!\n CLick here to book: {shop_url}!"
     while True:
         time.sleep(check_interval)
-        if wd.check_if_available(hotel_name):
-            if last_mail_sent_time is None or (datetime.now() - last_mail_sent_time).seconds > notify_interval:
-                if notify_count < max_notify_count:
-                    print(f"{notify_count}\n{text}")
-                    wd.send_mail(title, text)
-                    last_mail_sent_time = datetime.now()
-                    notify_count += 1
-        else:
-            last_mail_sent_time = None
-            notify_count = 0
+        for url, hotel_name in hotel_name_map.items():
+            if wd.check_if_available(hotel_name, url):
+                if last_mail_sent_time is None or (datetime.now() - last_mail_sent_time).seconds > notify_interval:
+                    if notify_count < max_notify_count:
+                        print(f"{notify_count}\n{text}")
+                        _title = title.format(hotel_name=hotel_name)
+                        _text = text.format(hotel_name=hotel_name, shop_url=url)
+                        wd.send_mail(_title, _text)
+                        last_mail_sent_time = datetime.now()
+                        notify_count += 1
+            else:
+                last_mail_sent_time = None
+                notify_count = 0
     #wd.close_driver()
